@@ -14,3 +14,13 @@ The first SDK for multi-AI collaboration transparency in software development.
 ## 📦 Installation
 ```bash
 npm install codedao-dashboard-sdk
+# CodeDAO Dashboard SDK
+
+[![npm version](https://badge.fury.io/js/codedao-dashboard-sdk.svg)](https://www.npmjs.com/package/codedao-dashboard-sdk)
+
+The first SDK for multi-AI collaboration transparency in software development.
+
+## 🚀 Quick Start
+
+```bash
+npm install codedao-dashboard-sdk
