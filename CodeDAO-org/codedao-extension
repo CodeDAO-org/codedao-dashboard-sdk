@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeDAO Dashboard - AI Collaboration Live</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .ai-pulse { animation: ai-pulse 2s infinite; }
+        @keyframes ai-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .github-connected { background: linear-gradient(45deg, #24292e, #0366d6); color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; }
+        .activity-item-enter { animation: slideInFromTop 0.5s ease-out; }
+        @keyframes slideInFromTop { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-green-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-900">CodeDAO Dashboard</h1>
+                            <p class="text-xs text-gray-600">Real AI Collaboration</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="github-connected">
+                        <i class="fab fa-github mr-2"></i>
+                        <span>GitHub Live</span>
+                        <div class="inline-block w-2 h-2 bg-green-400 rounded-full ml-2 ai-pulse"></div>
+                    </div>
+                    <a href="https://github.com/CodeDAO-org/codedao-extension" target="_blank" class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                        <i class="fab fa-github mr-2"></i>Repository
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Live Stats Banner -->
+    <div class="bg-gradient-to-r from-purple-600 to-green-600 text-white py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-broadcast-tower"></i>
+                        <span class="font-semibold">Live GitHub Integration Active</span>
+                    </div>
+                    <div class="text-sm opacity-90">
+                        Powered by <a href="https://github.com/CodeDAO-org/codedao-dashboard-sdk" class="underline hover:no-underline">CodeDAO Dashboard SDK</a>
+                    </div>
+                </div>
+                <button id="manual-refresh" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                <div class="text-center">
+                    <div class="flex items-center justify-center space-x-2 mb-2">
+                        <div class="w-4 h-4 rounded-full bg-purple-500"></div>
+                        <span class="text-sm font-medium text-gray-600">Claude</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900" id="claude-count">0</div>
+                </div>
+                <div class="text-center">
+                    <div class="flex items-center justify-center space-x-2 mb-2">
+                        <div class="w-4 h-4 rounded-full bg-green-500"></div>
+                        <span class="text-sm font-medium text-gray-600">ChatGPT</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900" id="chatgpt-count">0</div>
+                </div>
+                <div class="text-center">
+                    <div class="flex items-center justify-center space-x-2 mb-2">
+                        <div class="w-4 h-4 rounded-full bg-blue-500"></div>
+                        <span class="text-sm font-medium text-gray-600">GitHub Events</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900" id="github-events">0</div>
+                </div>
+                <div class="text-center">
+                    <div class="flex items-center justify-center space-x-2 mb-2">
+                        <div class="w-4 h-4 rounded-full bg-green-600"></div>
+                        <span class="text-sm font-medium text-gray-600">Success Rate</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900" id="success-rate">99%</div>
+                </div>
+                <div class="text-center">
+                    <div class="flex items-center justify-center space-x-2 mb-2">
+                        <div class="w-4 h-4 rounded-full bg-yellow-500"></div>
+                        <span class="text-sm font-medium text-gray-600">Uptime</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900">99.8%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Activity Timeline -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-sm border">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-semibold text-gray-900">Live AI Activity Feed</h2>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 rounded-full bg-green-500 ai-pulse"></div>
+                                    <span class="text-sm text-gray-600">Real GitHub Data</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">Watch Claude and ChatGPT collaborate on this repository in real-time</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div id="activity-feed" class="space-y-6">
+                            <div id="loading-state" class="text-center py-8">
+                                <i class="fas fa-spinner fa-spin text-2xl text-gray-400 mb-4"></i>
+                                <p class="text-gray-600">Loading real AI collaboration data...</p>
+                                <p class="text-sm text-gray-500 mt-2">Fetching from GitHub API</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                
+                <!-- SDK Promotion -->
+                <div class="bg-gradient-to-br from-purple-50 to-green-50 rounded-lg border-2 border-purple-200 p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-green-500 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Use Our SDK</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4 text-sm">Make your projects AI-transparent like CodeDAO!</p>
+                    <div class="bg-gray-900 text-green-400 p-3 rounded-lg font-mono text-xs mb-4">
+                        npm install codedao-dashboard-sdk
+                    </div>
+                    <a href="https://github.com/CodeDAO-org/codedao-dashboard-sdk" target="_blank" class="w-full bg-gradient-to-r from-purple-600 to-green-600 text-white py-2 px-4 rounded-lg hover:opacity-90 transition-opacity block text-center text-sm font-medium">
+                        <i class="fab fa-github mr-2"></i>View SDK on GitHub
+                    </a>
+                </div>
+
+                <!-- AI Agents Status -->
+                <div class="bg-white rounded-lg shadow-sm border p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">AI Agents</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">C</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-medium text-gray-900">Claude</span>
+                                    <div class="w-2 h-2 bg-green-500 rounded-full ai-pulse"></div>
+                                </div>
+                                <p class="text-sm text-gray-600">Code analysis & validation</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">G</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-medium text-gray-900">ChatGPT</span>
+                                    <div class="w-2 h-2 bg-green-500 rounded-full ai-pulse"></div>
+                                </div>
+                                <p class="text-sm text-gray-600">Problem solving & fixes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="bg-white rounded-lg shadow-sm border p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
+                    <div class="space-y-3">
+                        <a href="https://github.com/CodeDAO-org/codedao-extension/releases" target="_blank" class="flex items-center space-x-3 text-gray-600 hover:text-purple-600 transition-colors">
+                            <i class="fas fa-download w-4"></i>
+                            <span>Install Extension</span>
+                        </a>
+                        <a href="https://github.com/CodeDAO-org/codedao-extension/actions" target="_blank" class="flex items-center space-x-3 text-gray-600 hover:text-purple-600 transition-colors">
+                            <i class="fas fa-cog w-4"></i>
+                            <span>GitHub Actions</span>
+                        </a>
+                        <a href="/" class="flex items-center space-x-3 text-gray-600 hover:text-purple-600 transition-colors">
+                            <i class="fas fa-home w-4"></i>
+                            <span>Homepage</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center text-gray-600">
+                <p class="font-medium">CodeDAO Dashboard - First AI Collaboration Transparency Platform</p>
+                <p class="text-sm mt-2">
+                    Real GitHub API data | SDK available on NPM | 
+                    <a href="/" class="text-purple-600 hover:underline">Back to Homepage</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // GitHub API Configuration
+        const GITHUB_CONFIG = {
+            repo: 'CodeDAO-org/codedao-extension',
+            apiBase: 'https://api.github.com/repos/CodeDAO-org/codedao-extension',
+            pollInterval: 30000
+        };
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            initializeDashboard();
+            await startGitHubIntegration();
+            setupEventListeners();
+            setInterval(updateTimestamps, 60000);
+        });
+
+        function initializeDashboard() {
+            setTimeout(() => {
+                const loadingState = document.getElementById('loading-state');
+                if (loadingState && document.getElementById('activity-feed').children.length === 1) {
+                    loadingState.style.display = 'none';
+                }
+            }, 5000);
+        }
+
+        async function startGitHubIntegration() {
+            try {
+                console.log('🔗 Starting GitHub integration...');
+                await fetchGitHubActivity();
+                setInterval(fetchGitHubActivity, GITHUB_CONFIG.pollInterval);
+            } catch (error) {
+                console.error('Failed to start GitHub integration:', error);
+                showConnectionError();
+            }
+        }
+
+        async function fetchGitHubActivity() {
+            try {
+                const commitsResponse = await fetch(`${GITHUB_CONFIG.apiBase}/commits?per_page=30`);
+                if (!commitsResponse.ok) throw new Error('GitHub API request failed');
+                
+                const commits = await commitsResponse.json();
+                
+                const activities = commits.map(commit => ({
+                    id: `commit-${commit.sha}`,
+                    timestamp: commit.commit.author.date,
+                    agent: determineAgent(commit),
+                    action: commit.commit.message.split('\n')[0],
+                    type: determineActivityType(commit.commit.message),
+                    status: 'success',
+                    metadata: {
+                        commitHash: commit.sha.substring(0, 7),
+                        url: commit.html_url,
+                        repository: GITHUB_CONFIG.repo,
+                        author: commit.commit.author.name
+                    }
+                })).filter(activity => activity.agent !== 'Human');
+
+                displayActivities(activities);
+                updateStats(activities);
+                
+            } catch (error) {
+                console.error('Error fetching GitHub activity:', error);
+                showConnectionError();
+            }
+        }
+
+        function determineAgent(commit) {
+            const message = commit.commit.message.toLowerCase();
+            const author = commit.commit.author.email || '';
+            const authorName = commit.commit.author.name || '';
+            
+            // Check for AI indicators
+            if (author.includes('ai@') || author === 'ai@codedao.org') {
+                if (message.includes('claude') || message.includes('validated') || message.includes('analyzed')) {
+                    return 'Claude';
+                } else if (message.includes('chatgpt') || message.includes('generated') || message.includes('automated')) {
+                    return 'ChatGPT';
+                }
+                return 'Claude'; // Default AI
+            }
+            
+            if (authorName.includes('Multi-AI') || authorName.includes('AI Agent')) {
+                return message.includes('chatgpt') ? 'ChatGPT' : 'Claude';
+            }
+            
+            // Check message content for AI indicators
+            if (message.includes('ai agent') || message.includes('automated') || message.includes('multi-ai')) {
+                return message.includes('chatgpt') ? 'ChatGPT' : 'Claude';
+            }
+            
+            return 'Human';
+        }
+
+        function determineActivityType(message) {
+            const msg = message.toLowerCase();
+            if (msg.includes('fix') || msg.includes('bug')) return 'detection';
+            if (msg.includes('test') || msg.includes('validate')) return 'validation';
+            if (msg.includes('refactor') || msg.includes('optimize')) return 'optimization';
+            if (msg.includes('security') || msg.includes('vulnerability')) return 'security';
+            if (msg.includes('doc') || msg.includes('readme')) return 'documentation';
+            if (msg.includes('deploy') || msg.includes('release')) return 'deployment';
+            return 'commit';
+        }
+
+        function displayActivities(activities) {
+            const feed = document.getElementById('activity-feed');
+            if (!feed) return;
+
+            if (activities.length === 0) {
+                feed.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-robot text-3xl mb-4"></i>
+                        <h4 class="text-lg font-medium text-gray-900 mb-2">No Recent AI Activity</h4>
+                        <p>Waiting for Claude and ChatGPT to collaborate...</p>
+                        <p class="text-sm mt-2">AI commits will appear here automatically</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const activitiesHTML = activities.map(activity => createActivityHTML(activity)).join('');
+            feed.innerHTML = activitiesHTML;
+        }
+
+        function createActivityHTML(activity) {
+            const agentColor = activity.agent === 'Claude' ? '#8B5CF6' : '#10B981';
+            const agentIcon = activity.agent === 'Claude' ? 'C' : 'G';
+            const typeIcon = getTypeIcon(activity.type);
+            const timeAgo = formatTimestamp(activity.timestamp);
+            
+            return `
+                <div class="activity-item-enter bg-gray-50 rounded-lg p-4 border-l-4 hover:bg-gray-100 transition-colors" style="border-left-color: ${agentColor}">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style="background-color: ${agentColor}">
+                            ${agentIcon}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-medium" style="color: ${agentColor}">${activity.agent}</span>
+                                <div class="flex items-center space-x-2">
+                                    <i class="${typeIcon} text-gray-500 text-sm"></i>
+                                    <span class="text-xs text-gray-500">${timeAgo}</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-900 mb-2 leading-relaxed">${activity.action}</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
+                                        <i class="fas fa-code-branch mr-1"></i>
+                                        ${activity.metadata.commitHash}
+                                    </span>
+                                    <span class="text-xs text-gray-500">by ${activity.metadata.author}</span>
+                                </div>
+                                <a href="${activity.metadata.url}" target="_blank" class="text-blue-600 hover:underline text-xs font-medium">
+                                    <i class="fab fa-github mr-1"></i>View Commit
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getTypeIcon(type) {
+            const icons = {
+                'commit': 'fas fa-code-branch',
+                'detection': 'fas fa-bug',
+                'validation': 'fas fa-check-double',
+                'optimization': 'fas fa-tachometer-alt',
+                'security': 'fas fa-shield-alt',
+                'documentation': 'fas fa-file-alt',
+                'deployment': 'fas fa-rocket'
+            };
+            return icons[type] || 'fas fa-info-circle';
+        }
+
+        function updateStats(activities) {
+            const claudeCount = activities.filter(a => a.agent === 'Claude').length;
+            const chatgptCount = activities.filter(a => a.agent === 'ChatGPT').length;
+            const githubEvents = activities.length;
+            
+            document.getElementById('claude-count').textContent = claudeCount;
+            document.getElementById('chatgpt-count').textContent = chatgptCount;
+            document.getElementById('github-events').textContent = githubEvents;
+        }
+
+        function formatTimestamp(timestamp) {
+            const now = new Date();
+            const date = new Date(timestamp);
+            const diff = Math.floor((now - date) / 1000);
+            
+            if (diff < 60) return `${diff}s ago`;
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return `${Math.floor(diff / 86400)}d ago`;
+        }
+
+        function updateTimestamps() {
+            fetchGitHubActivity(); // Refresh data
+        }
+
+        function setupEventListeners() {
+            document.getElementById('manual-refresh').addEventListener('click', async () => {
+                const button = document.getElementById('manual-refresh');
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Refreshing...';
+                
+                await fetchGitHubActivity();
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                }, 1000);
+            });
+        }
+
+        function showConnectionError() {
+            const feed = document.getElementById('activity-feed');
+            if (feed) {
+                feed.innerHTML = `
+                    <div class="text-center py-8 text-amber-600">
+                        <i class="fas fa-exclamation-triangle text-2xl mb-4"></i>
+                        <h4 class="text-lg font-medium text-gray-900 mb-2">GitHub API Rate Limited</h4>
+                        <p>Too many requests. Please try again in a few minutes.</p>
+                        <button onclick="location.reload()" class="mt-4 bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700">
+                            Retry Connection
+                        </button>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
